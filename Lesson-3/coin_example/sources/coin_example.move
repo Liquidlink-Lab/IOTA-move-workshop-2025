@@ -1,11 +1,12 @@
-module example1::test;
+module coin_example::coin_example;
 
 use iota::coin::{Self, TreasuryCap, Coin};
 use iota::url;
+use iota::transfer::{Self, transfer};
 
-public struct TEST has drop {}
+public struct COIN_EXAMPLE has drop {}
 
-fun init(witness: TEST, ctx: &mut TxContext) {
+fun init(witness: COIN_EXAMPLE, ctx: &mut TxContext) {
     let (mut treasury_cap, coin_metadata) = coin::create_currency(
         witness,
         9,
@@ -18,4 +19,13 @@ fun init(witness: TEST, ctx: &mut TxContext) {
 
     transfer::public_freeze_object(coin_metadata);
     transfer::public_transfer(treasury_cap, ctx.sender());
+}
+
+public fun mint_coin<T>(
+    treasury_cap: &mut TreasuryCap<T>,
+    amount: u64,
+    ctx: &mut TxContext
+) {
+    let coin = coin::mint<T>(treasury_cap, amount, ctx);
+    transfer::public_transfer(coin, tx_context::sender(ctx));
 }
