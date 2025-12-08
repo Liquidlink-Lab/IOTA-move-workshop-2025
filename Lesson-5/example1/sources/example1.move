@@ -19,7 +19,7 @@ public entry fun get_a_ball(ctx: &mut TxContext) {
     let color_of_the_ball: u64 = 13;
 
     let ball = Ball {
-        id: object_new(ctx),
+        id: object_new(ctx),cd 
         color: color_of_the_ball,
     };
 
