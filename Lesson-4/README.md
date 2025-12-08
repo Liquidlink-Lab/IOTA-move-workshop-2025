@@ -42,4 +42,4 @@ https://slides.ycnets.com/20251204
 
 ## 程式碼
 
-https://github.com/Liquidlink-Lab/iota-hero-demo
+https://github.com/indigofeather/iota-work-shop-2025
