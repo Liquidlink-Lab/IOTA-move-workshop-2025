@@ -1,0 +1,85 @@
+module testnft::testnft;
+
+use iota::display;
+use iota::event;
+use iota::url::{Self, Url};
+use std::string;
+
+public struct TestNFT has key, store {
+    id: UID,
+    name: string::String,
+    description: string::String,
+    url: Url,
+}
+
+public struct TESTNFT has drop {}
+
+
+public struct NFTMinted has copy, drop {
+    object_id: ID,
+    creator: address,
+    name: string::String,
+}
+
+
+public fun name(nft: &TestNFT): &string::String {
+    &nft.name
+}
+
+public fun description(nft: &TestNFT): &string::String {
+    &nft.description
+}
+
+public fun url(nft: &TestNFT): &Url {
+    &nft.url
+}
+
+
+public fun mint_to_sender(
+    name: vector<u8>,
+    description: vector<u8>,
+    url: vector<u8>,
+    ctx: &mut TxContext,
+) {
+    let sender = tx_context::sender(ctx);
+    let nft = TestNFT {
+        id: object::new(ctx),
+        name: string::utf8(name),
+        description: string::utf8(description),
+        url: url::new_unsafe_from_bytes(url),
+    };
+
+    event::emit(NFTMinted {
+        object_id: object::id(&nft),
+        creator: sender,
+        name: nft.name,
+    });
+
+    transfer::public_transfer(nft, sender);
+}
+
+public fun transfer(nft: TestNFT, recipient: address, _: &mut TxContext) {
+    transfer::public_transfer(nft, recipient)
+}
+
+public fun update_description(nft: &mut TestNFT, new_description: vector<u8>, _: &mut TxContext) {
+    nft.description = string::utf8(new_description)
+}
+
+public fun burn(nft: TestNFT, _: &mut TxContext) {
+    let TestNFT { id, name: _, description: _, url: _ } = nft;
+    object::delete(id)
+}
+
+fun init(otw: TESTNFT, ctx: &mut TxContext) {
+    let publisher = iota::package::claim(otw, ctx);
+
+    let mut display = display::new<TestNFT>(&publisher, ctx);
+    display::add(&mut display, string::utf8(b"name"), string::utf8(b"{name}"));
+    display::add(&mut display, string::utf8(b"description"), string::utf8(b"{description}"));
+    display::add(&mut display, string::utf8(b"image_url"), string::utf8(b"{url}"));
+    display::update_version(&mut display);
+
+    transfer::public_transfer(publisher, ctx.sender());
+    transfer::public_transfer(display, ctx.sender());
+}
