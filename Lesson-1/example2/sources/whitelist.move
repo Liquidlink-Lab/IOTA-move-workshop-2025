@@ -10,7 +10,7 @@ use iota::tx_context::{Self as tx_context, TxContext};
 use iota::vec_map::{Self as vec_map, VecMap};
 use std::string::{Self, String};
 
-public struct Whitelist has key, store {
+public struct Whitelist has key {
     id: UID,
     state: bool,
     admin: address,
@@ -32,11 +32,12 @@ public entry fun add_to_whitelist(
     wl: &mut Whitelist,
     name: vector<u8>,
     ctx: &mut TxContext,
+    newaddress:address,
 ) {
-    let sender = tx_context::sender(ctx);
+    //let sender = tx_context::sender(ctx);
     assert(wl.state, 666);
     let name_str = string::utf8(name);
-    vec_map::insert(&mut wl.allowed, sender, name_str);
+    vec_map::insert(&mut wl.allowed, newaddress, name_str);
 }
 
 public entry fun freeze_state(wl: &mut Whitelist, state: bool, ctx: &mut TxContext) {

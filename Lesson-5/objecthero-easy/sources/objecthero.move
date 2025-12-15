@@ -39,24 +39,6 @@ public struct Hero has key {
     attack_times: u8,
 }
 
-public struct FightList has key, store {
-    id: UID,
-    ranking: VecMap<address, u64>,
-}
-
-const MINT_HERO_PRICE: u64 = 50_000_000_000;
-const MINT_EQUIPMENT_PRICE: u64 = 20_000_000_000;
-const MINT_HERO_DECIMALS: u64 = 1_000_000_000;
-
-fun init(ctx: &mut TxContext) {
-    let list = FightList {
-        id: object_new(ctx),
-        ranking: vec_map_empty(),
-    };
-
-    public_share_object(list);
-}
-
 fun random_value(r: &Random, low: u64, high: u64, ctx: &mut TxContext): u64 {
     let mut generator = random::new_generator(r, ctx);
     let random_num = random::generate_u64_in_range(&mut generator, low, high);

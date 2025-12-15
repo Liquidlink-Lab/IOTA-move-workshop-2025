@@ -25,10 +25,12 @@ fun random_val(r:&Random,low:u64,high:u64,ctx:&mut TxContext):u64{
     random_num
 }
 
-public entry fun get_a_man(ctx: &mut TxContext) {
+public entry fun get_a_man(r:&Random,ctx: &mut TxContext) {
+
+    let newrandom = random_val(r,18,60,ctx);
     let new_man = Man {
         id: object::new(ctx),
-        number: 33,
+        number: newrandom,
         watch: option::none(),
     };
     transfer::public_transfer(new_man, tx_context::sender(ctx));
